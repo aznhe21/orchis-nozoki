@@ -1,0 +1,6 @@
+{
+  "name": "orchis-nozoki",
+  "description": "Orchisで読み込めなくなった設定ファイルをのぞき見するツール",
+  "author": "aznhe21 <aznhe21.mc@gmail.com>",
+  "license": "GPL-3.0-or-later"
+}
