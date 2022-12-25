@@ -425,7 +425,10 @@ export abstract class Item {
     }
 
     if (rootID.equals(Known_CLSID_UsersFiles)) {
-      if (components[0].length === 18) {
+      if (components.length < 2) {
+        throw new OrchisError(`ユーザーファイルコンポーネントが過小`);
+      }
+      if (components[1][0] !== 0) {
         // どう言う構造か謎だが、この場合は%USERPROFILE%に続くパスが続いてるっぽい
         return new PathItem(["%USERPROFILE%", ...components.slice(1).map(parseNameComponent)]);
       }
@@ -433,7 +436,6 @@ export abstract class Item {
       if (components.length > 2) {
         throw new OrchisError(`ユーザーファイルコンポーネントが過多：${components.length}`);
       }
-
       return new UsersFilesItem(new CLSID(components[1].subarray(12, 28)));
     }
 
