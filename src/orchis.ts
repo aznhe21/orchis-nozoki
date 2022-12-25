@@ -227,22 +227,22 @@ export class OcsLauncher {
 export type OcsItem = OcsItemLaunch | OcsItemFolder | OcsItemSeparator | OcsItemSubmenu | OcsItemSpecial | OcsItemUnknown;
 
 export class OcsItemLaunch {
-  private itemCache?: Item;
+  #itemCache?: Item;
 
   constructor(public itemID: Uint8Array, public caption: string) {}
 
   item(): Item {
-    return this.itemCache ??= Item.parse(this.itemID);
+    return this.#itemCache ??= Item.parse(this.itemID);
   }
 }
 
 export class OcsItemFolder {
-  private itemCache?: Item;
+  #itemCache?: Item;
 
   constructor(public itemID: Uint8Array, public caption: string) {}
 
   item(): Item {
-    return this.itemCache ??= Item.parse(this.itemID);
+    return this.#itemCache ??= Item.parse(this.itemID);
   }
 }
 
@@ -255,7 +255,7 @@ export class OcsItemSubmenu {
 }
 
 export class OcsItemSpecial {
-  private static readonly ITEMS: Record<number, string | undefined> = {
+  static readonly #ITEMS: Record<number, string | undefined> = {
     144: "ファイル名を指定して実行",
     138: "検索",
     143: "ネットワークドライブの割り当て",
@@ -277,7 +277,7 @@ export class OcsItemSpecial {
   constructor(public id: number, public caption: string) {}
 
   description(): string {
-    return OcsItemSpecial.ITEMS[this.id] ?? "不明な特殊項目";
+    return OcsItemSpecial.#ITEMS[this.id] ?? "不明な特殊項目";
   }
 }
 
@@ -482,34 +482,34 @@ export class DesktopItem extends Item {
 }
 
 export class PathItem extends Item {
-  private readonly _components: string[];
+  readonly #components: string[];
 
   constructor(components: string[]) {
     super();
-    this._components = components;
+    this.#components = components;
   }
 
   get components(): ReadonlyArray<string> {
-    return this._components;
+    return this.#components;
   }
 
   toString(): string {
-    return this._components.join("\\");
+    return this.#components.join("\\");
   }
 }
 
 export class NetworkItem extends Item {
-  private readonly _folder: string;
-  private readonly _components: string[];
+  readonly #folder: string;
+  readonly #components: string[];
 
   constructor(folder: string, components: string[]) {
     super();
-    this._folder = folder;
-    this._components = components;
+    this.#folder = folder;
+    this.#components = components;
   }
 
   toString(): string {
-    return [this._folder, ...this._components].join("\\");
+    return [this.#folder, ...this.#components].join("\\");
   }
 }
 
@@ -521,7 +521,7 @@ export class MyComputerItem extends Item {
 
 // CLSID単体のやつ
 export class RootItem extends Item {
-  private static readonly REGISTRY: Registry = {
+  static readonly #REGISTRY: Registry = {
     [CLSID_MyComputer.toString()]: "PC（マイコンピュータ）",
     [CLSID_RecycleBin.toString()]: "ごみ箱",
     [CLSID_NetworkExplorerFolder.toString()]: "ネットワーク",
@@ -529,20 +529,20 @@ export class RootItem extends Item {
     [Known_CLSID_HomeGroup.toString()]: "ホームグループ",
   };
 
-  private readonly _clsid: CLSID;
+  readonly #clsid: CLSID;
 
   constructor(clsid: CLSID) {
     super();
-    this._clsid = clsid;
+    this.#clsid = clsid;
   }
 
   toString(): string {
-    return RootItem.REGISTRY[this._clsid.toString()] ?? "不明";
+    return RootItem.#REGISTRY[this.#clsid.toString()] ?? "不明";
   }
 }
 
 export class SpecialFolderItem extends Item {
-  private static readonly REGISTRY: Registry = {
+  static readonly #REGISTRY: Registry = {
     "{0DB7E03F-FC29-4DC6-9020-FF41B59E513A}": "3Dオブジェクト",
     "{B4BFCC3A-DB2C-424C-B029-7FE99A87C641}": "デスクトップ",
     "{088E3905-0323-4B02-9826-5D99428E115F}": "ダウンロード",
@@ -556,78 +556,78 @@ export class SpecialFolderItem extends Item {
     "{1CF1260C-4DD0-4EBB-811F-33C572699FDE}": "ミュージック",
     "{3DFDF296-DBEC-4FB4-81D1-6A3438BCF4DE}": "ミュージック",
   };
-  private readonly _clsids: CLSID[];
+  readonly #clsids: CLSID[];
 
   constructor(clsids: CLSID[]) {
     super();
-    this._clsids = clsids;
+    this.#clsids = clsids;
   }
 
   toString(): string {
     return (
-      (this._clsids.length === 1 && SpecialFolderItem.REGISTRY[this._clsids[0].toString()]) ||
-      this._clsids.map((c) => `::${c.toString()}`).join("\\")
+      (this.#clsids.length === 1 && SpecialFolderItem.#REGISTRY[this.#clsids[0].toString()]) ||
+      this.#clsids.map((c) => `::${c.toString()}`).join("\\")
     );
   }
 }
 
 // {59031A47-3F72-44A7-89C5-5595FE6B30EE}以下
 export class UsersFilesItem extends Item {
-  private static readonly REGISTRY: Registry = {
+  static readonly #REGISTRY: Registry = {
     [FOLDERID_Favorites.toString()]: "お気に入り",
     // フォーマッタによる一行化阻止
   };
 
-  private readonly _clsid: CLSID;
+  readonly #clsid: CLSID;
 
   constructor(clsid: CLSID) {
     super();
-    this._clsid = clsid;
+    this.#clsid = clsid;
   }
 
   toString(): string {
-    return UsersFilesItem.REGISTRY[this._clsid.toString()] ?? "不明なユーザーファイル項目";
+    return UsersFilesItem.#REGISTRY[this.#clsid.toString()] ?? "不明なユーザーファイル項目";
   }
 }
 
 // {031E4825-7B94-4DC3-B131-E946B44C8DD5}以下
 export class LibraryItem extends Item {
-  private static readonly REGISTRY: Registry = {
+  static readonly #REGISTRY: Registry = {
     "{7B0DB17D-9CD2-4A93-9733-46CC89022E7C}": "ドキュメント",
     "{2112AB0A-C86A-4FFE-A368-0DE96E47012E}": "ミュージック",
     "{A990AE9F-A03B-4E80-94BC-9912D7504104}": "ピクチャ",
     "{491E922F-5643-4AF4-A7EB-4E7A138D8174}": "ビデオ",
   };
 
-  private readonly _clsid: CLSID;
+  readonly #clsid: CLSID;
 
   constructor(clsid: CLSID) {
     super();
-    this._clsid = clsid;
+    this.#clsid = clsid;
   }
 
   toString(): string {
-    return LibraryItem.REGISTRY[this._clsid.toString()] ?? "不明なライブラリ項目";
+    return LibraryItem.#REGISTRY[this.#clsid.toString()] ?? "不明なライブラリ項目";
   }
 }
 
 export class ControlPanelItem extends Item {
-  private static readonly REGISTRY: Registry = {
+  static readonly #REGISTRY: Registry = {
     [CLSID_Printers.toString()]: "プリンタ",
     // フォーマッタによる一行化阻止
   };
 
-  private readonly _clsid?: CLSID;
+  readonly #clsid?: CLSID;
 
   constructor(clsid?: CLSID) {
     super();
-    this._clsid = clsid;
+    this.#clsid = clsid;
   }
 
   toString(): string {
-    if (this._clsid === undefined) {
+    if (this.#clsid === undefined) {
       return "コントロールパネル";
     }
-    return ControlPanelItem.REGISTRY[this._clsid.toString()] ?? "不明なコントロールパネル項目";
+    return ControlPanelItem.#REGISTRY[this.#clsid.toString()] ?? "不明なコントロールパネル項目";
   }
 }
