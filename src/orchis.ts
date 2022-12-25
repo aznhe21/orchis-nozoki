@@ -415,6 +415,9 @@ export abstract class Item {
           for (let i = 1; i < components[1].length && components[1][i] !== 0x00; i++) {
             drive += String.fromCharCode(components[1][i]);
           }
+          if (drive[drive.length - 1] === "\\") {
+            drive = drive.slice(0, -1);
+          }
 
           return new PathItem([drive, ...components.slice(2).map(parseNameComponent)]);
       }
@@ -494,6 +497,9 @@ export class PathItem extends Item {
   }
 
   toString(): string {
+    if (this.#components.length === 1) {
+      return `${this.#components[0]}\\`; // C:\
+    }
     return this.#components.join("\\");
   }
 }
