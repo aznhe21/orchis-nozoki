@@ -160,7 +160,22 @@ export class Ocs {
             throw new OcsError("起動項目が不正");
           }
 
-          return new OcsItemLaunch(itemID, caption);
+          const parameter = item["Parameter"];
+          if (!(parameter === undefined || typeof parameter === "string")) {
+            throw new OcsError("起動項目が不正");
+          }
+
+          const verb = item["Verb"];
+          if (!(verb === undefined || typeof verb === "string")) {
+            throw new OcsError("起動項目が不正");
+          }
+
+          const showCmd = item["ShowCmd"];
+          if (!(typeof showCmd === "number")) {
+            throw new OcsError("起動項目が不正");
+          }
+
+          return new OcsItemLaunch(itemID, caption, parameter, verb, showCmd);
         }
 
         case 1: {
@@ -227,12 +242,39 @@ export class OcsLauncher {
 export type OcsItem = OcsItemLaunch | OcsItemFolder | OcsItemSeparator | OcsItemSubmenu | OcsItemSpecial | OcsItemUnknown;
 
 export class OcsItemLaunch {
+  static #SHOW_CMD = ["通常のウィンドウ", "最小化", "最大化"];
   #itemCache?: Item;
 
-  constructor(public itemID: Uint8Array, public caption: string) {}
+  constructor(
+    public itemID: Uint8Array,
+    public caption: string,
+    public parameter: string | undefined,
+    public verb: string | undefined,
+    public showCmd: number,
+  ) {}
 
   item(): Item {
     return this.#itemCache ??= Item.parse(this.itemID);
+  }
+
+  verbString(): string {
+    switch (this.verb) {
+      case undefined:
+      case "open":
+        return "開く";
+
+      case "runas":
+        return "管理者として実行";
+
+      default:
+        return this.verb;
+    }
+  }
+
+  showCmdString(): string | undefined {
+    return this.showCmd !== undefined && this.showCmd >= 1 && this.showCmd <= OcsItemLaunch.#SHOW_CMD.length
+      ? OcsItemLaunch.#SHOW_CMD[this.showCmd - 1]
+      : undefined;
   }
 }
 
