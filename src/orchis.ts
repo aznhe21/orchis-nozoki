@@ -216,6 +216,9 @@ export class Ocs {
     }
 
     const root = parseOcs(text);
+    if (Object.keys(root).length === 0) {
+      throw new OcsError("設定ファイルが不正です");
+    }
     return parseRoot(root);
   }
 
