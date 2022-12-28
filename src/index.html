@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Orchisのぞき</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <dialog id="file-dialog" class="file-area has-title" open>
+      <section>
+        <h3>Orchisのぞき</h3>
+        <p>
+          「Orchisのぞき」はWindows向けランチャーであるOrchisの設定ファイルを読み込み表示するツールです。
+          Orchisで読み込めない壊れた設定ファイルも表示できるため、設定の復元・移行などに便利です。
+        </p>
+      </section>
+
+      <p>
+        ページにファイルをドラッグ＆ドロップして設定ファイルを開くか、
+        またはここをクリックして設定ファイルを選択します。
+      </p>
+    </dialog>
+
+    <div id="container">
+      <div id="left">
+        <select id="launcher-select"></select>
+
+        <div id="launcher">
+        </div>
+      </div>
+      <div id="right">
+        <div id="info"></div>
+        <div class="file-area">
+          <div>
+            ページにファイルをドラッグ＆ドロップして設定ファイルを開くか、
+            またはここをクリックして設定ファイルを選択します。
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

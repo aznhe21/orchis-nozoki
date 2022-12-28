@@ -1,0 +1,140 @@
+:root {
+  --color-bg: #f0f0f0;
+  --color-fg: black;
+  --color-selected-bg: #0078d7;
+  --color-selected-fg: white;
+  --color-titlebar-fg: white;
+  --color-titlebar-bg: #0078d7;
+  --color-separator: #a0a0a0;
+  --color-locked-outline: white;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.file-area {
+  display: grid;
+  align-items: center;
+  box-sizing: border-box;
+  border: solid 1px black;
+  user-select: none;
+  text-align: center;
+}
+
+.file-area.has-title {
+  align-items: start;
+}
+
+.file-area > p {
+  margin: 0;
+}
+
+#file-dialog {
+  --height: 25vh;
+  border-radius: 10px;
+  background: white;
+  width: 75vw;
+  min-height: var(--height);
+  margin-top: calc((100vh - var(--height)) / 2);
+}
+
+#file-dialog:not([open]) {
+  display: none;
+}
+
+#file-dialog h3 {
+  margin: 0;
+}
+
+body:not(.loaded) #container {
+  display: none;
+}
+
+#container {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+#left, #right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#launcher {
+  flex: 1;
+  overflow: auto;
+  background: var(--color-bg);
+  border: 1px solid var(--color-titlebar-bg);
+  padding: 4px;
+}
+
+#launcher .item > .caption {
+  color: var(--color-fg);
+}
+
+#launcher .item.selected > .caption {
+  color: var(--color-selected-fg);
+  background: var(--color-selected-bg);
+}
+
+#launcher .item.locked > .caption {
+  outline: 1px dashed var(--color-locked-outline);
+  outline-offset: -1px;
+}
+
+#launcher .caption,
+#launcher .item.separator {
+  user-select: none;
+  /* cursor: pointer; */
+}
+
+#launcher .item.separator {
+  height: 5px;
+}
+
+#launcher .item.separator::after {
+  content: "";
+  display: block;
+  position: relative;
+  top: 2px;
+  height: 1px;
+  background: var(--color-separator);
+}
+
+#launcher .children {
+  margin-left: 1em;
+}
+
+#info {
+  flex: 1;
+  overflow: auto;
+  padding: 4px;
+}
+
+#info > dl {
+  display: grid;
+  grid: none / 30% 1fr;
+  margin: 0;
+}
+
+#info > dl > dt {
+  grid-column: 1;
+  margin: 0;
+}
+
+#info > dl > dd {
+  grid-column: 2;
+  margin: 0;
+}
+
+#right .file-area {
+  flex: 0 0 10em;
+  padding: 1em;
+}
