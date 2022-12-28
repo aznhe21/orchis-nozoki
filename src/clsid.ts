@@ -86,6 +86,7 @@ export const CLSID_Printers = new CLSID("{2227A280-3AEA-1069-A2DE-08002B30309D}"
 export const CLSID_MyDocuments = new CLSID("{450D8FBA-AD25-11D0-98A8-0800361B1103}");
 
 // ShObjIdl_core.h
+export const CLSID_ShellDesktop = new CLSID("{00021400-0000-0000-C000-000000000046}");
 export const CLSID_NetworkExplorerFolder = new CLSID("{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}");
 
 // KnownFolders.h
@@ -94,6 +95,5 @@ export const FOLDERID_Favorites = new CLSID("{1777F761-68AD-4D8A-87BD-30B759FA33
 // Windows SDKで定義されていないもの
 
 export const Known_CLSID_UsersLibraries = new CLSID("{031E4825-7B94-4DC3-B131-E946B44C8DD5}");
-export const Known_CLSID_ControlPanel = new CLSID("{26EE0668-A00A-44D7-9371-BEB064C98683}");
 export const Known_CLSID_UsersFiles = new CLSID("{59031A47-3F72-44A7-89C5-5595FE6B30EE}");
-export const Known_CLSID_HomeGroup = new CLSID("{B4FB3F98-C1EA-428D-A78A-D1F5659CBA93}");
+export const Known_CLSID_ControlPanel = new CLSID("{26EE0668-A00A-44D7-9371-BEB064C98683}");
