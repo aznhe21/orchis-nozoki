@@ -122,6 +122,7 @@ body:not(.loaded) #container {
   display: grid;
   grid: none / 30% 1fr;
   margin: 0;
+  word-break: break-all;
 }
 
 #info > dl > dt {
