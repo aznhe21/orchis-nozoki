@@ -1,0 +1,19 @@
+default:
+  image: node:bullseye-slim
+  before_script:
+    - npm ci
+
+check:
+  script:
+    - npm run check
+
+pages:
+  needs: [check]
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - npm run build
+    - mkdir public && cp src/*.html src/*.css src/*.js public
+  artifacts:
+    paths:
+      - ./public

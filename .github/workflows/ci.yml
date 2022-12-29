@@ -1,0 +1,33 @@
+name: Check and deploy the app to GitHub Pages
+on: [push]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - run: npm ci
+      - run: npm run check
+  pages:
+    needs: [check]
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/configure-pages@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - run: npm ci
+      - run: npm run build
+      - run: mkdir public && cp src/*.html src/*.css src/*.js public
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./public
+      - uses: actions/deploy-pages@v1
