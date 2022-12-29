@@ -85,7 +85,10 @@ export class ItemIDList {
       case 0x2E:
       case 0x71:
         const riid = this.type !== 0x71 ? this.GUIDStruct_guid() : this.ExtGUIDStruct_guid();
-        return getClassName(riid);
+        if (riid !== undefined) {
+          return getClassName(riid);
+        }
+        break;
     }
 
     console.log(`不明な種類のCLSID：${this.type.toString(16)}`);
@@ -97,8 +100,8 @@ export class ItemIDList {
   //     BYTE dummy; /* offset 01 is unknown */
   //     GUID guid;  /* offset 02 */
   // } GUIDStruct;
-  GUIDStruct_guid(): CLSID {
-    return new CLSID(this.data.subarray(4, 4 + 16));
+  GUIDStruct_guid(): CLSID | undefined {
+    return CLSID.fromArray(this.data.subarray(4, 4 + 16));
   }
 
   // Wineにはない独自定義
@@ -107,8 +110,8 @@ export class ItemIDList {
   //     BYTE dummy[11]; /* offset 01 is unknown */
   //     GUID guid;      /* offset 12 */
   // } ExtGUIDStruct;
-  ExtGUIDStruct_guid(): CLSID {
-    return new CLSID(this.data.subarray(14, 14 + 16));
+  ExtGUIDStruct_guid(): CLSID | undefined {
+    return CLSID.fromArray(this.data.subarray(14, 14 + 16));
   }
 
   // typedef struct tagDriveStruct
@@ -312,10 +315,10 @@ const NetworkExplorerFolder = new class implements Item {
 
 const UsersLibraries = new class implements Item {
   readonly #REGISTRY: Array<[CLSID, string]> = [
-    [new CLSID("{7B0DB17D-9CD2-4A93-9733-46CC89022E7C}"), "ドキュメント"],
-    [new CLSID("{2112AB0A-C86A-4FFE-A368-0DE96E47012E}"), "ミュージック"],
-    [new CLSID("{A990AE9F-A03B-4E80-94BC-9912D7504104}"), "ピクチャ"],
-    [new CLSID("{491E922F-5643-4AF4-A7EB-4E7A138D8174}"), "ビデオ"],
+    [CLSID.parse("{7B0DB17D-9CD2-4A93-9733-46CC89022E7C}"), "ドキュメント"],
+    [CLSID.parse("{2112AB0A-C86A-4FFE-A368-0DE96E47012E}"), "ミュージック"],
+    [CLSID.parse("{A990AE9F-A03B-4E80-94BC-9912D7504104}"), "ピクチャ"],
+    [CLSID.parse("{491E922F-5643-4AF4-A7EB-4E7A138D8174}"), "ビデオ"],
     //
   ];
 
@@ -334,8 +337,8 @@ const UsersLibraries = new class implements Item {
       return;
     }
 
-    if (idl.type === 0x00) {
-      const clsid = idl.ExtGUIDStruct_guid();
+    let clsid;
+    if (idl.type === 0x00 && (clsid = idl.ExtGUIDStruct_guid())) {
       path.append(this.#getLibraryName(clsid) ?? `::${clsid}`);
     } else {
       path.append(idl.getText());
@@ -369,8 +372,8 @@ const UsersFiles = new class implements Item {
       return;
     }
 
-    if (idl.type === 0x00) {
-      const clsid = idl.ExtGUIDStruct_guid();
+    let clsid;
+    if (idl.type === 0x00 && (clsid = idl.ExtGUIDStruct_guid())) {
       path.append(this.#getFolderName(clsid) ?? `::${clsid}`);
     } else {
       path.append(idl.getText());
@@ -439,19 +442,19 @@ const REGISTRY: Array<[CLSID, string]> = [
   [CLSID_RecycleBin, "ごみ箱"],
   [CLSID_ControlPanel, "すべてのコントロール パネル項目"],
   [CLSID_NetworkExplorerFolder, "ネットワーク"],
-  [new CLSID("{B4FB3F98-C1EA-428D-A78A-D1F5659CBA93}"), "ホームグループ"],
-  [new CLSID("{A8CDFF1C-4878-43BE-B5FD-F8091C1C60D0}"), "ドキュメント"],
-  [new CLSID("{3ADD1653-EB32-4CB0-BBD7-DFA0ABB5ACCA}"), "ピクチャ"],
-  [new CLSID("{1CF1260C-4DD0-4EBB-811F-33C572699FDE}"), "ミュージック"],
-  [new CLSID("{A0953C92-50DC-43BF-BE83-3742FED03C9C}"), "ビデオ"],
-  [new CLSID("{D20EA4E1-3957-11D2-A40B-0C5020524153}"), "管理ツール"],
+  [CLSID.parse("{B4FB3F98-C1EA-428D-A78A-D1F5659CBA93}"), "ホームグループ"],
+  [CLSID.parse("{A8CDFF1C-4878-43BE-B5FD-F8091C1C60D0}"), "ドキュメント"],
+  [CLSID.parse("{3ADD1653-EB32-4CB0-BBD7-DFA0ABB5ACCA}"), "ピクチャ"],
+  [CLSID.parse("{1CF1260C-4DD0-4EBB-811F-33C572699FDE}"), "ミュージック"],
+  [CLSID.parse("{A0953C92-50DC-43BF-BE83-3742FED03C9C}"), "ビデオ"],
+  [CLSID.parse("{D20EA4E1-3957-11D2-A40B-0C5020524153}"), "管理ツール"],
   [CLSID_Printers, "プリンタ"],
 
   // 自信ないやつ
   [Known_CLSID_UsersLibraries, "ライブラリ"],
   [Known_CLSID_UsersFiles, "ユーザープロファイル"],
   [Known_CLSID_ControlPanel, "コントロールパネル"],
-  [new CLSID("{088E3905-0323-4B02-9826-5D99428E115F}"), "ダウンロード"],
+  [CLSID.parse("{088E3905-0323-4B02-9826-5D99428E115F}"), "ダウンロード"],
 ];
 
 function getItem(clsid: CLSID): Item | undefined {
