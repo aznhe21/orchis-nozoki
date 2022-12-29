@@ -70,7 +70,11 @@ function parseOcs(text: string): OcsSection {
   return data;
 }
 
-export class OcsError extends Error {}
+export class OcsError extends Error {
+  constructor(message?: string) {
+    super(message ?? "設定ファイルが異常です");
+  }
+}
 
 export class Ocs {
   static parse(text: string): Ocs {
@@ -90,19 +94,22 @@ export class Ocs {
     function parseRoot(root: OcsSection): Ocs {
       const launchers = root["Launchers"];
       if (!(launchers && ocsIsSection(launchers))) {
-        throw new OcsError("Launchersが不正");
+        console.log("Launchersが不正");
+        throw new OcsError();
       }
 
       const launcherCount = launchers["LauncherCount"];
-      if (typeof launcherCount !== "number") {
-        throw new OcsError("LauncherCountが不正");
+      if (!(typeof launcherCount === "number")) {
+        console.log("LauncherCountが不正");
+        throw new OcsError();
       }
 
       const ocsLaunchers = [];
       for (let i = 1; i <= launcherCount; i++) {
         const launcher = launchers[i.toString()];
         if (!(launcher && ocsIsSection(launcher))) {
-          throw new OcsError("Launcher要素が不正");
+          console.log("Launcher要素が不正");
+          throw new OcsError();
         }
 
         ocsLaunchers.push(parseLauncher(launcher));
@@ -114,7 +121,8 @@ export class Ocs {
       const title = launcher["Title"];
       const menu = launcher["Menu"];
       if (!(typeof title === "string" && menu !== undefined && ocsIsSection(menu))) {
-        throw new OcsError("Launcherが不正");
+        console.log("設定ファイルが異常です");
+        throw new OcsError();
       }
 
       const ocsItems = parseMenu(menu);
@@ -122,15 +130,17 @@ export class Ocs {
     }
     function parseMenu(menu: OcsSection): OcsItem[] {
       const items = menu["Items"];
-      if (typeof items !== "number") {
-        throw new OcsError("Menuが不正");
+      if (!(typeof items === "number")) {
+        console.log("Menuが不正");
+        throw new OcsError();
       }
 
       const ocsItems = [];
       for (let i = 0; i < items; i++) {
         const item = menu[i.toString()];
         if (!(item && ocsIsSection(item))) {
-          throw new OcsError("Menu要素が不正");
+          console.log("Menu要素が不正");
+          throw new OcsError();
         }
 
         ocsItems.push(parseItem(item));
@@ -144,22 +154,26 @@ export class Ocs {
           const itemID = item["ItemID"];
           const caption = item["Caption"];
           if (!(itemID instanceof Uint8Array && typeof caption === "string")) {
-            throw new OcsError("起動項目が不正");
+            console.log("起動項目が不正");
+            throw new OcsError();
           }
 
           const parameter = item["Parameter"];
           if (!(parameter === undefined || typeof parameter === "string")) {
-            throw new OcsError("起動項目が不正");
+            console.log("起動項目が不正");
+            throw new OcsError();
           }
 
           const verb = item["Verb"];
           if (!(verb === undefined || typeof verb === "string")) {
-            throw new OcsError("起動項目が不正");
+            console.log("起動項目が不正");
+            throw new OcsError();
           }
 
           const showCmd = item["ShowCmd"];
           if (!(typeof showCmd === "number")) {
-            throw new OcsError("起動項目が不正");
+            console.log("起動項目が不正");
+            throw new OcsError();
           }
 
           return new OcsItemLaunch(itemID, caption, parameter, verb, showCmd);
@@ -169,7 +183,8 @@ export class Ocs {
           const itemID = item["ItemID"];
           const caption = item["Caption"];
           if (!(itemID instanceof Uint8Array && typeof caption === "string")) {
-            throw new OcsError("フォルダー項目が不正");
+            console.log("フォルダー項目が不正");
+            throw new OcsError();
           }
 
           return new OcsItemFolder(itemID, caption);
@@ -183,14 +198,16 @@ export class Ocs {
           const caption = item["Caption"];
           const items = item["Items"];
           if (!(typeof caption === "string" && typeof items === "number")) {
-            throw new OcsError("サブメニュー項目が不正");
+            console.log("サブメニュー項目が不正");
+            throw new OcsError();
           }
 
           const ocsItems = [];
           for (let i = 0; i < items; i++) {
             const subitem = item[i.toString()];
             if (!(subitem && ocsIsSection(subitem))) {
-              throw new OcsError("サブメニュー要素が不正");
+              console.log("サブメニュー要素が不正");
+              throw new OcsError();
             }
 
             ocsItems.push(parseItem(subitem));
@@ -203,7 +220,8 @@ export class Ocs {
           const id = item["ID"];
           const caption = item["Caption"];
           if (!(typeof id === "number" && typeof caption === "string")) {
-            throw new OcsError("特殊項目が不正");
+            console.log("特殊項目が不正");
+            throw new OcsError();
           }
 
           return new OcsItemSpecial(id, caption);
@@ -217,7 +235,8 @@ export class Ocs {
 
     const root = parseOcs(text);
     if (Object.keys(root).length === 0) {
-      throw new OcsError("設定ファイルが不正です");
+      console.log("ファイルが空");
+      throw new OcsError();
     }
     return parseRoot(root);
   }
