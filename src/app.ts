@@ -128,10 +128,8 @@ class App {
       const currentSelected = this.#eLauncher.querySelector<HTMLElement>(".selected");
       if (currentSelected?.dataset.index) {
         const currentIndex = Number.parseInt(currentSelected.dataset.index);
-        if (currentIndex === index) {
-          doLock = !currentSelected.classList.contains("locked");
-        }
 
+        doLock = currentIndex !== index || !currentSelected.classList.contains("locked");
         currentSelected.classList.remove("locked");
       }
 
